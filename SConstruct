@@ -19,6 +19,7 @@ opts = Variables([], ARGUMENTS)
 env = DefaultEnvironment()
 
 # Define our options
+opts.Add(EnumVariable('platform', "Compilation platform", 'ios', ['ios', 'tvos']))
 opts.Add(EnumVariable('target', "Compilation target", 'debug', ['debug', 'release', "release_debug"]))
 opts.Add(EnumVariable('arch', "Compilation Architecture", '', ['', 'arm64', 'armv7', 'x86_64']))
 opts.Add(BoolVariable('simulator', "Compilation platform", 'no'))
@@ -58,15 +59,26 @@ if env['version'] == '':
 # Enable Obj-C modules
 env.Append(CCFLAGS=["-fmodules", "-fcxx-modules"])
 
-if env['simulator']:
-    sdk_name = 'iphonesimulator'
+if env['platform'] == 'ios':
+    sdk_name = 'iphone'
     env.Append(CCFLAGS=['-mios-simulator-version-min=10.0'])
     env.Append(LINKFLAGS=["-mios-simulator-version-min=10.0"])
-else:
-    sdk_name = 'iphoneos'
+
     env.Append(CCFLAGS=['-miphoneos-version-min=10.0'])
     env.Append(LINKFLAGS=["-miphoneos-version-min=10.0"])
+elif env['platform'] == 'tvos':
+    sdk_name = 'appletv'
+    env.Append(CCFLAGS=['-mappletvsimulator-version-min=10.0'])
+    env.Append(LINKFLAGS=["-mappletvsimulator-version-min=10.0"])
 
+    env.Append(CCFLAGS=['-mappletvos-version-min=10.0'])
+    env.Append(LINKFLAGS=["-mappletvos-version-min=10.0"])
+
+if env['simulator']:
+    sdk_name += 'simulator'
+else:
+    sdk_name += 'os'
+    
 try:
     sdk_path = decode_utf8(subprocess.check_output(['xcrun', '--sdk', sdk_name, '--show-sdk-path']).strip())
 except (subprocess.CalledProcessError, OSError):
@@ -172,8 +184,8 @@ sources = Glob('plugins/' + env['plugin'] + '/*.cpp')
 sources.append(Glob('plugins/' + env['plugin'] + '/*.mm'))
 sources.append(Glob('plugins/' + env['plugin'] + '/*.m'))
 
-# lib<plugin>.<arch>-<simulator|iphone>.<release|debug|release_debug>.a
-library_platform = env["arch"] + "-" + ("simulator" if env["simulator"] else "iphone")
+# lib<plugin>.<arch>-<simulator|device>.<release|debug|release_debug>.a
+library_platform = env["arch"] + "-" + env["platform"] + ("simulator" if env["simulator"] else "device")
 library_name = env['plugin'] + "." + library_platform + "." + env["target"] + ".a"
 library = env.StaticLibrary(target=env['target_path'] + library_name, source=sources)
 
