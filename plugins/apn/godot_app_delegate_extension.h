@@ -28,7 +28,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+
+#if defined(IPHONE_ENABLED)
 #import "platform/iphone/godot_app_delegate.h"
+#elif defined(TVOS_ENABLED)
+#import "platform/tvos/godot_app_delegate.h"
+#endif
 
 @interface GodotApplicalitionDelegate (PushNotifications)
 

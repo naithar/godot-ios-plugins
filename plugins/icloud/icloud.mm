@@ -30,7 +30,11 @@
 
 #include "icloud.h"
 
+#if defined(IPHONE_ENABLED)
 #import "platform/iphone/app_delegate.h"
+#elif defined(TVOS_ENABLED)
+#import "platform/tvos/app_delegate.h"
+#endif
 
 #import <Foundation/Foundation.h>
 

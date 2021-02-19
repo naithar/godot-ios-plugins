@@ -33,7 +33,12 @@
 #include "apn.h"
 
 #import "godot_user_notification_delegate.h"
+
+#if defined(IPHONE_ENABLED)
 #import "platform/iphone/godot_app_delegate.h"
+#elif defined(TVOS_ENABLED)
+#import "platform/tvos/godot_app_delegate.h"
+#endif
 
 struct APNSInitializer {
 

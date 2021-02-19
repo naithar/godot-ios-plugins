@@ -31,8 +31,14 @@
 #include "game_center.h"
 
 #import "game_center_delegate.h"
+
+#if defined(IPHONE_ENABLED)
 #import "platform/iphone/app_delegate.h"
 #import "platform/iphone/view_controller.h"
+#elif defined(TVOS_ENABLED)
+#import "platform/tvos/app_delegate.h"
+#import "platform/tvos/view_controller.h"
+#endif
 
 #import <GameKit/GameKit.h>
 
@@ -95,7 +101,7 @@ Error GameCenter::authenticate() {
 			if (player.isAuthenticated) {
 				ret["result"] = "ok";
 
-				if (@available(iOS 13, *)) {
+				if (@available(iOS 13, tvOS 12.4, *)) {
 					ret["player_id"] = [player.teamPlayerID UTF8String];
 				} else {
 					ret["player_id"] = [player.playerID UTF8String];
@@ -336,7 +342,7 @@ Error GameCenter::request_identity_verification_signature() {
 			ret["signature"] = [[signature base64EncodedStringWithOptions:0] UTF8String];
 			ret["salt"] = [[salt base64EncodedStringWithOptions:0] UTF8String];
 			ret["timestamp"] = timestamp;
-			if (@available(iOS 13.5, *)) {
+			if (@available(iOS 13.5, tvOS 13.5, *)) {
 				ret["player_id"] = [player.teamPlayerID UTF8String];
 			} else {
 				ret["player_id"] = [player.playerID UTF8String];
@@ -350,7 +356,7 @@ Error GameCenter::request_identity_verification_signature() {
 		pending_events.push_back(ret);
 	}];
 
-	if (@available(iOS 13.5, *)) {
+	if (@available(iOS 13.5, tvOS 13.5, *)) {
 		[player fetchItemsForIdentityVerificationSignature:verificationSignatureHandler];
 	} else {
 		[player generateIdentityVerificationSignatureWithCompletionHandler:verificationSignatureHandler];

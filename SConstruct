@@ -60,19 +60,27 @@ if env['version'] == '':
 env.Append(CCFLAGS=["-fmodules", "-fcxx-modules"])
 
 if env['platform'] == 'ios':
+    env.Append(CPPDEFINES=["IPHONE_ENABLED"])
+
     sdk_name = 'iphone'
-    env.Append(CCFLAGS=['-mios-simulator-version-min=10.0'])
-    env.Append(LINKFLAGS=["-mios-simulator-version-min=10.0"])
 
-    env.Append(CCFLAGS=['-miphoneos-version-min=10.0'])
-    env.Append(LINKFLAGS=["-miphoneos-version-min=10.0"])
+    if env['simulator']:
+        env.Append(CCFLAGS=['-mios-simulator-version-min=10.0'])
+        env.Append(LINKFLAGS=["-mios-simulator-version-min=10.0"])
+    else:
+        env.Append(CCFLAGS=['-miphoneos-version-min=10.0'])
+        env.Append(LINKFLAGS=["-miphoneos-version-min=10.0"])
 elif env['platform'] == 'tvos':
-    sdk_name = 'appletv'
-    env.Append(CCFLAGS=['-mappletvsimulator-version-min=10.0'])
-    env.Append(LINKFLAGS=["-mappletvsimulator-version-min=10.0"])
+    env.Append(CPPDEFINES=["TVOS_ENABLED"])
 
-    env.Append(CCFLAGS=['-mappletvos-version-min=10.0'])
-    env.Append(LINKFLAGS=["-mappletvos-version-min=10.0"])
+    sdk_name = 'appletv'
+
+    if env['simulator']:
+        env.Append(CCFLAGS=['-mappletvsimulator-version-min=10.0'])
+        env.Append(LINKFLAGS=["-mappletvsimulator-version-min=10.0"])
+    else:
+        env.Append(CCFLAGS=['-mappletvos-version-min=10.0'])
+        env.Append(LINKFLAGS=["-mappletvos-version-min=10.0"])
 
 if env['simulator']:
     sdk_name += 'simulator'
@@ -184,7 +192,7 @@ sources = Glob('plugins/' + env['plugin'] + '/*.cpp')
 sources.append(Glob('plugins/' + env['plugin'] + '/*.mm'))
 sources.append(Glob('plugins/' + env['plugin'] + '/*.m'))
 
-# lib<plugin>.<arch>-<simulator|device>.<release|debug|release_debug>.a
+# lib<plugin>.<arch>-<ios|tvos><simulator|device>.<release|debug|release_debug>.a
 library_platform = env["arch"] + "-" + env["platform"] + ("simulator" if env["simulator"] else "device")
 library_name = env['plugin'] + "." + library_platform + "." + env["target"] + ".a"
 library = env.StaticLibrary(target=env['target_path'] + library_name, source=sources)

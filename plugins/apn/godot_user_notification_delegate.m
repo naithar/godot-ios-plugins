@@ -65,7 +65,7 @@ static NSMutableArray<UserNotificationService *> *services = nil;
 // MARK: Delegate
 
 // The method will be called on the delegate only if the application is in the foreground. If the method is not implemented or the handler is not called in a timely manner then the notification will not be presented. The application can choose to have the notification presented as a sound, badge, alert and/or in the notification list. This decision should be based on whether the information in the notification is otherwise visible to the user.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __API_AVAILABLE(macos(10.14), ios(10.0), watchos(3.0), tvos(10.0)) {
 	for (UserNotificationService *service in services) {
 		if (![service respondsToSelector:_cmd]) {
 			continue;
@@ -76,7 +76,7 @@ static NSMutableArray<UserNotificationService *> *services = nil;
 }
 
 // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from application:didFinishLaunchingWithOptions:.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler __API_AVAILABLE(macos(10.14), ios(10.0), watchos(3.0)) __API_UNAVAILABLE(tvos) {
 	for (UserNotificationService *service in services) {
 		if (![service respondsToSelector:_cmd]) {
 			continue;
@@ -89,7 +89,7 @@ static NSMutableArray<UserNotificationService *> *services = nil;
 // The method will be called on the delegate when the application is launched in response to the user's request to view in-app notification settings.
 // Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the notification settings view in Settings.
 // The notification will be nil when opened from Settings.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification __API_AVAILABLE(macos(10.14), ios(12.0))__API_UNAVAILABLE(watchos, tvos) {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification __API_AVAILABLE(macos(10.14), ios(12.0)) __API_UNAVAILABLE(watchos, tvos) {
 	for (UserNotificationService *service in services) {
 		if (![service respondsToSelector:_cmd]) {
 			continue;
